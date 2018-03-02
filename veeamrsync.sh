@@ -1,12 +1,13 @@
 #!/bin/bash
 
-rsync -au --delete --progress /spare/share/Backups gareth@192.168.30.122:~/
+rsync -au --delete --progress="sshpass -p 'cat .passfile' ssh -o StrictHostKeyChecking=no -l name" /source/path/ destination/path
 
 if [ "$?" -eq "0" ]
 then
-echo $? > rsyncresult
+echo $? > rsynctvresult
 else
-echo $? > rsyncresult
+echo $? > rsynctvresult
 fi
 
-date +"%d-%m-%y %T" > backuprsyncdate
+date +"%d-%m-%y %T" >> rsynctvresult
+
