@@ -1,0 +1,41 @@
+#!/bin/bash
+
+##requires mail and sshpass installed, smtp srver##
+##use if unable to configure sshkeys due to OS, can be modified for sshkeys##
+Password=$(sudo cat /user/home/.pass)
+
+sshpass -p $Password ssh user@extshareip find folder -type f | wc -l > /user/home/file.txt
+
+find /share/path/folder -type f | wc -l > /user/home/file2.txt
+
+A=$(cat /user/home/file.txt)
+B=$(cat /user/home/file2.txt)
+
+C=$(expr $B - $A)
+
+if [ "$C" -eq 0 ]
+then
+echo "No Files Copied" > /user/home/rsyncresult.txt
+date +"%d-%m-%y %T" >> /user/home/rsyncresult.txt
+mail -s " Sync Result" user@usermail.com < /user/home/rsyncresult.txt 
+else
+date +"%d-%m-%y %T" > /user/home/rsyncresult.txt
+sshpass -p $Password rsync -au --delete --progress /share/path/folder user@extshareip:~/
+if [ "$?" -eq "0" ]
+then
+sshpass -p $Password ssh user@extshareip find folder -type f | wc -l > /user/home/file3.txt
+D=$(cat /user/home/file3.txt)
+E=$(expr $D - $A)
+echo "Success" >> /user/home/rsyncresult.txt
+echo "$E files synced" >> /user/home/rsyncresult.txt
+date +"%d-%m-%y %T" >> /user/home/rsyncresult.txt
+mail -s "Sync Result" user@usermail.com < /user/home/rsyncresult.txt
+else
+echo "Failed" > /user/home/rsyncresult.txt
+date +"%d-%m-%y %T" >> /user/home/rsyncresult.txt
+mail -s "Sync Result" user@usermail.com < /user/home/rsyncresult.txt
+fi
+fi 
+
+##can add remove files if needed##
+sudo rm /user/home/file*
