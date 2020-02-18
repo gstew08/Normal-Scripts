@@ -3,7 +3,7 @@
 ##create/modify/remove a VM with fault tolerance and options##
 
 ##change directory to /hdd##
-cd /home/gareth/vm
+cd /path/to/vm_folder
 
 echo -n "Would you like to run a VM (y/n?)"
 read answer4
